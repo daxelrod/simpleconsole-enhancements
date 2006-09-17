@@ -1,0 +1,62 @@
+#!/usr/bin/env ruby -w
+require File.dirname(__FILE__) + "/../lib/init.rb"
+
+class TController < SimpleConsole::Controller
+  params :string => [:n => :name]
+  before_filter :check_for_invalid
+
+  def say_hi
+    puts "hi"
+  end
+
+  def show_id
+    @id = params[:id]
+  end
+
+  def show_name
+    @name = params[:name]
+  end
+
+  def show_title
+    @title = params[:title]
+  end
+
+  def method_missing(action)
+    puts "Unkown action: " + action.to_s
+  end
+
+  private
+  def check_for_invalid
+    if invalid_params?
+      print "Invalid param(s): "
+      puts invalid_params.join(", ")
+      exit
+    end
+  end
+
+  def finale
+    puts "finale!"
+  end
+end
+
+class TView < SimpleConsole::View
+
+  def show_id
+    puts "The value of id is #{@id}"
+  end
+
+  def show_name
+    puts "The value of name is #{@name}"
+  end
+
+  def show_title
+    puts "The value of title is #{@title}"
+  end
+
+end
+
+begin
+  SimpleConsole::Application.run(ARGV, TController, TView)
+rescue Exception => error
+  puts error
+end
