@@ -1,0 +1,160 @@
+#!/usr/bin/env ruby -w
+# require File.dirname(__FILE__) + "/../lib/init.rb"
+require "rubygems"
+require "simpleconsole"
+
+class Controller < SimpleConsole::Controller
+  params :string => {:c => :controller, :v => :view, :f => :file},
+         :bool => {:h => :help}
+  before_filter :check_params
+  before_filter :set_file, :only => [:application, :controller, :single, :view]
+  after_filter :put_file, :only => [:application, :controller, :single, :view]
+
+  def rakefile
+    @filename = "Rakefile"
+    read_file(@filename)
+    put_file(@filename)
+  end
+
+  def default
+    redirect_to :action => :help
+  end
+
+  def help
+    generators = [:application, :controller, :rakefile, :single, :view]
+    unless params[:id].nil?
+      redirect_to(:action => ("help_" + params[:id]).to_sym) if generators.include?(params[:id].to_sym)
+      render :action => :unknown_help
+    else
+      render :action => :help
+    end
+  end
+
+  def method_missing(method = "method_missing")
+    puts "Unknown action - #{method.to_s}."
+    puts "Try using 'simcon help' for usage info."
+  end
+
+  private
+  def set_file
+    if params.has_key?(:file)
+      @filename = params[:file]
+    else
+      @filename = nil
+    end
+
+    read_file
+  end
+
+  def read_file(filename = params[:action].to_s + ".rb")
+    begin 
+      file = File.open(File.dirname(__FILE__) + "/files/" + filename)
+      @file_contents = file.read
+      file.close
+    rescue Exception => error
+      puts "Error when trying to open the file '#{filename}' for reading: "
+            + error.to_s
+    end
+
+    controller = params[:controller] || "Controller"
+    view = params[:view] || "View"
+    substitute_content(/_Controller_/ => controller, /_View_/ => view)
+  end
+
+  def put_file(filename = @filename)
+    if @filename
+      begin
+        File.open(filename, "w") do |file|
+          file.puts @file_contents
+        end
+      rescue Exception => error
+        puts "Error when trying to open the file '#{filename}' for writing: " 
+              + error.to_s
+      end
+    else
+      puts @file_contents
+    end
+
+    render(:action => :file_generated)
+  end
+
+  def check_params
+    if params.has_key?(:help)
+      render :action => :help
+    end
+
+    if invalid_params?
+      puts "Unkown option(s): #{invalid_params.join(", ")}"
+      puts "Try using 'simcon help' for usage info."
+      exit
+    end
+  end
+
+  def substitute_content(rules)
+    rules.each do |regexp, replacement|
+      @file_contents.gsub!(regexp, replacement)
+    end
+  end
+end
+
+class View < SimpleConsole::View
+  def help
+    puts "Usage: simcon [generator] [--file output_file] [--options]"
+    puts ""
+    puts "Available generators and their usage:"
+    puts "  application [--file output_file] [-c controller_name | -v view_name]"
+    puts "  controller [--file output_file] [-c controller_name]"
+    puts "  rakefile"
+    puts "  single [--file output_file] [-c controller_name | -v view_name]"
+    puts "  view [--file output_file] [-v view_name]"
+    puts ""
+    puts "The generators will create a new file given by the '-f output_file' argument.  If no '--file' was given, it will output to STDOUT.  Try 'gen help [generator]' for more info about each generator."
+    puts ""
+    puts "Available options:"
+    puts "  -f | --file FILENAME"
+    puts "  -c | --controller CONTROLLER"
+    puts "  -v | --view VIEW"
+  end
+
+  def file_generated
+    puts "The file '#{@filename}' was generated." if @filename
+  end
+
+  def help_application
+    puts "Usage simcon application [-f output_file] [-c controller_name | -v view_name]"
+    puts ""
+    puts "Generates the script that will run an application.  The Controller/View class names should be replaced and any files should be required within the script."
+  end
+
+  def help_controller
+    puts "Usage simcon controller [-f output_file] [-c controller_name]"
+    puts ""
+    puts "Generates the Controller class for an application."
+  end
+
+  def help_single
+    puts "Usage simcon single [-f output_file] [-c controller_name | -v view_name]"
+    puts ""
+    puts "Generates an entire application within a single script, including the Controller/View classes and the Application.run statement."
+  end
+
+  def help_view
+    puts "Usage simcon view [-f output_file] [-v view_name]"
+    puts ""
+    puts "Generates the View class for an application."
+  end
+
+  def help_rakefile
+    puts "Usage: simcon rakefile"
+    puts ""
+    puts "Will generate a default Rakefile in the current directory."
+    puts "Some tasks include: rdoc, rcov, tests, stats, package, and install."
+  end
+
+  def unknown_help
+    puts "Unknown action - #{params[:id]}."
+    help
+  end
+end
+
+SimpleConsole::Application.run(ARGV, Controller, View)
