@@ -1,0 +1,2 @@
+class SimpleConsole::Prompter
+end

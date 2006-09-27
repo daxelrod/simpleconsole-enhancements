@@ -1,0 +1,6 @@
+SimpleConsole is currently available as a gem without any dependencies (other
+than Ruby and RubyGems =P).
+
+<pre class="code">
+sudo gem install simpleconsole --remote
+</pre>

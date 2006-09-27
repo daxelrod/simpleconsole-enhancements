@@ -25,7 +25,7 @@ require File.dirname(__FILE__) + "/filter.rb"
 # Check out the "before_filter" and "after_filter" methods, similar to the
 # methods implemented in Rails.
 class SimpleConsole::Controller
-  attr_accessor :params
+  attr_accessor :params, :argv
 
   # Filter for methods to call previous to an action
   @@before_chain = SimpleConsole::Filter.new
@@ -35,11 +35,12 @@ class SimpleConsole::Controller
 
   # Keeps track of param types
   @@params_parser = SimpleConsole::ParamsParser.new
-
+    
   # Initializes the "params" hash and creates a new Controller.  Not needed when
   # developing an application with SimpleConsole.
   def initialize()
     @params = Hash.new
+    @argv = Array.new
   end
 
   # Returns true if the controller defines the action given, otherwise returns
@@ -64,6 +65,7 @@ class SimpleConsole::Controller
       params[:id] = id.to_i 
     end
     params.update(@@params_parser.argv_to_params(argv))
+    argv.concat(argv)
   end
 
   # Sets the current action to the new action parameter. 
@@ -85,7 +87,7 @@ class SimpleConsole::Controller
       raise error unless error.message == "Simple::Console Redirection"
     end
   end
-
+  
   protected
   # When the view is rendered, this action is used instead
   # == Example Usage
@@ -219,4 +221,5 @@ class SimpleConsole::Controller
 
   # block all of these methods from being controller actions
   @@block_action = self.new.methods
+
 end

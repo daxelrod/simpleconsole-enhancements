@@ -1,3 +1,21 @@
+h1. Rubyforge
+
+For the latest news, check out
+"Rubyforge":http://rubyforge.org/projects/simpleconsole/.
+
+h1. Wiki
+
+Want to help out?  Check out the
+"wiki":http://simpleconsole.rubyforge.org/wiki/wiki.pl.
+
+h1. Source Code
+
+SimpleConsole is in a Subversion repository.  You can check it out:
+
+<pre class="code">
+svn co svn://rubyforge.org/var/svn/simpleconsole/trunk
+</pre>
+
 h1. What's new?
 
 * The site is up and running!

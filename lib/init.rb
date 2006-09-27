@@ -15,6 +15,8 @@ module SimpleConsole
   end
   class Application
   end
+  class Prompter
+  end
 end
 
 Dir.glob(File.dirname(__FILE__) + "/*.rb").uniq.each do |file|

@@ -7,8 +7,8 @@ class Controller < SimpleConsole::Controller
   params :string => {:c => :controller, :v => :view, :f => :file},
          :bool => {:h => :help}
   before_filter :check_params
-  before_filter :set_file, :only => [:application, :controller, :single, :view]
-  after_filter :put_file, :only => [:application, :controller, :single, :view]
+  before_filter :set_file, :only => [:application, :controller, :single, :full, :view]
+  after_filter :put_file, :only => [:application, :controller, :single, :full, :view]
 
   def rakefile
     @filename = "Rakefile"
@@ -21,7 +21,7 @@ class Controller < SimpleConsole::Controller
   end
 
   def help
-    generators = [:application, :controller, :rakefile, :single, :view]
+    generators = [:application, :controller, :full, :rakefile, :single, :view]
     unless params[:id].nil?
       redirect_to(:action => ("help_" + params[:id]).to_sym) if generators.include?(params[:id].to_sym)
       render :action => :unknown_help
@@ -136,6 +136,12 @@ class View < SimpleConsole::View
     puts "Usage simcon single [-f output_file] [-c controller_name | -v view_name]"
     puts ""
     puts "Generates an entire application within a single script, including the Controller/View classes and the Application.run statement."
+  end
+
+  def help_full
+    puts "Usage simcon full [-f output_file] [-c controller_name | -v view_name]"
+    puts ""
+    puts "Generates an entire application within a single script, including the Controller/View classes and the Application.run statement.  Also generates the method_missing and default methods."
   end
 
   def help_view
