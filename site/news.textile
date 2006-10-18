@@ -18,4 +18,6 @@ svn co svn://rubyforge.org/var/svn/simpleconsole/trunk
 
 h1. What's new?
 
+* 2006-10-18 New tutorial is up - let me know if you get any errors while going through it.
+* 2006-10-18 Thanks to Jon Maddox for catching the error on the example page =P.
 * The site is up and running!

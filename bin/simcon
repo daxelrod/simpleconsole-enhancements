@@ -108,7 +108,7 @@ class View < SimpleConsole::View
     puts "  single [--file output_file] [-c controller_name | -v view_name]"
     puts "  view [--file output_file] [-v view_name]"
     puts ""
-    puts "The generators will create a new file given by the '-f output_file' argument.  If no '--file' was given, it will output to STDOUT.  Try 'gen help [generator]' for more info about each generator."
+    puts "The generators will create a new file given by the '-f output_file' argument.  If no '--file' was given, it will output to STDOUT.  Try 'simcon help [generator]' for more info about each generator."
     puts ""
     puts "Available options:"
     puts "  -f | --file FILENAME"

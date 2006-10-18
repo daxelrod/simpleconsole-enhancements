@@ -32,7 +32,7 @@ class View < SimpleConsole::View
   end
 end
 
-Application.run(ARGV, Controller, View)
+SimpleConsole::Application.run(ARGV, Controller, View)
 </pre>
 
 If this program were in the file 'myapp', you could use it on the command line

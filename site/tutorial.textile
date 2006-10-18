@@ -1,1 +1,190 @@
-Still under construction, sorry!
+This tutorial assumes that you've already downloaded and installed the gem as instructed "here":download.html.
+
+In the following tutorial, [t0fuu] will be my prompt at the command line.
+
+h1. Starting off
+
+Let's try starting off with a simple console application - one that can fit into a single file.  When you installed the simpleconsole gem, you got access to a new binary script - simcon.
+
+<pre class="code">
+[t0fuu] simcon
+Usage: simcon [generator] [--file output_file] [--options]
+
+Available generators and their usage:
+  application [--file output_file] [-c controller_name | -v view_name]
+  controller [--file output_file] [-c controller_name]
+  rakefile
+  single [--file output_file] [-c controller_name | -v view_name]
+  view [--file output_file] [-v view_name]
+
+The generators will create a new file given by the '-f output_file' argument.  
+If no '--file' was given, it will output to STDOUT.  Try 'gen help [generator]' 
+for more info about each generator.
+
+Available options:
+  -f | --file FILENAME
+  -c | --controller CONTROLLER
+  -v | --view VIEW
+</pre>
+	
+This is a code generator, just to get you started.  For now, just ignore everything and use the single generator.
+
+<pre class="code">
+[t0fuu] simcon single -f myapp
+The file 'myapp' was generated.
+[t0fuu] chmod a+x myapp
+</pre>
+
+Now open up the file 'myapp' in your editor, and you should see this:
+
+<pre class="code">
+#!/usr/bin/env ruby -w
+require "rubygems"
+require "simpleconsole"
+# require File.dirname(__FILE__) + "/../"
+  
+class Controller < SimpleConsole::Controller
+end
+  
+class View < SimpleConsole::View
+end
+  
+SimpleConsole::Application.run(ARGV, Controller, View)
+</pre>
+
+That's the entire outline of your application.  You can separate the Controller and View class in different files (and use generators to generate those files) but since this is a short example, we'll stick to one file.
+
+Pay attention to the first line, `#!/usr/bin/env ruby -w`.  This works on most *nix systems but if you use a different path to ruby, you may want to change that.
+
+Let's try out our application so far.
+
+<pre class="code">
+[t0fuu] ruby myapp
+/opt/local/lib/ruby/gems/1.8/gems/simpleconsole-0.1.0/lib/application.rb:45:
+in `run': undefined method `default' for #<Controller:0x606694   		
+@params={:action=>:default, :id=>nil}> (NoMethodError)
+        from myapp:12
+</pre>
+
+There's an error for an undefined method, `default`.  That's because by default, when your application is called with no arguments, SimpleConsole will try to run the method `default` defined in your controller.
+
+Let's fix that, inside your Controller class, write this:
+
+<pre class="code">
+class Controller < SimpleConsole::Controller
+  def default
+    puts "Hello World!"
+  end
+end
+</pre>
+
+Now try running it:
+
+<pre class="code">
+[t0fuu] ruby myapp
+Hello World!
+</pre>
+	
+Neat.  But if we don't want to litter our Controller with calls to `puts`.  Let's separate the logic from the view.  This time, get rid of your `puts` call and put this into your Controller and View"
+
+<pre class="code">
+class Controller < SimpleConsole::Controller
+  def default
+    @message = "Hello World!"
+  end
+end
+
+class View < SimpleConsole::View
+  def default
+    puts @message
+  end
+end
+</pre>
+
+If you run myapp now, you should get the same results.  Any instance variable that you set in your controller, you will have access to in your view.
+
+So that's our default action.  What if we wanted to make another action?  Well, simpleconsole follows this pattern:
+
+<pre class="code">
+[t0fuu] myapp action [--option param]
+</pre>
+
+Where action is just a method in your controller or view.  Lets define a new action, `whoami`.  We want it to do something like this -
+
+<pre class="code">
+[t0fuu] myapp whoami --name Hugh
+Hello, your name is Hugh
+</pre>
+
+To do this, we need to define a new few things:
+
+<pre class="code">
+class Controller < SimpleConsole::Controller
+  params :string => {:n => :name}
+
+  def whoami
+    @name = params[:name]
+  end
+
+  # ...
+end
+
+class View < SimpleConsole::View
+  def whoami
+    puts "Hello, your name is " + @name
+  end
+end
+</pre>
+
+And that's it!  In the Controller class, we're making a call to the class method `params`.  This sets up the shorthand and longhand arguments that your application can take.
+
+<pre class="code">
+[t0fuu] myapp whoami --name Hugh
+Hello, your name is Hugh
+</pre>
+
+h1. Parameter Parsing
+
+The parameter parsing (the call to the class method `params`) might be a bit confusing.  Here's some more info on that.
+
+Using the example:
+
+<pre class="code">params :string => {:n => :name}</pre>
+
+This just means we're accepting a string in the form of `myapp -n string` or `myapp --name string`.  So whatever argument is after `-n` or `--name` is passed into the hash `params[:name]` for you to use in the Controller.
+
+There are also a few other types you can use:
+* :string
+* :bool
+* :text
+* :int
+
+Here's an example of parameter parsing -
+<pre class="code">
+class Controller < SimpleConsole::Controller
+  params :string => {:n => :name},
+         :text => {:d => :description},
+         :bool => {:o => :old},
+  		 :int => {:a = :age}
+
+  # ...
+end
+</pre>
+
+Now from the command line, we can do this:
+<pre class="code">
+[t0fuu] ruby myapp --name Sensei -d "old and wise" --old -a 98
+</pre>
+
+Inside our Controller, we'll have access to all of these arguments through the params hash.
+
+<pre class="code">
+params[:name]			# => "Sensei"
+params[:description]	# => "old and wise"
+params[:old]			# => true
+params[:age]			# => 98
+</pre>
+
+h1. More?
+
+Check out the "documentation":docs.html.  Let me know if you have any bug issues, questions, or you just want to talk about Ruby.  My email is "bienhd@gmail.com":mailto:bienhd@gmail.com.

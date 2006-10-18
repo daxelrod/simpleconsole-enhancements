@@ -65,7 +65,7 @@ ul#navigation li{
   line-height: 1em;
 }
 
-#content pre.code {
+#content pre {
   background-color: black;
   border: 1px solid green;
   color: green;
