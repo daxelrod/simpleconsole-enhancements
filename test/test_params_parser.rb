@@ -69,5 +69,18 @@ class TestParamsParser < Test::Unit::TestCase
     @parser.argv_to_params(argv)
     assert_same_set(%w(-s --title), @parser.valid_params)
   end
+
+  def test_valid_param_keys
+    @parser.string_params(:s => :string, :t => :title)
+    argv = ["-s", "a string", "--title", "the title", "--monkey", "Macaque", "-i", "not valid"]
+
+    params = @parser.argv_to_params(argv)
+    expected_keys = [:string, :title] 
+    assert_same_set(expected_keys, @parser.valid_param_keys)
+
+    expected_keys.each do |key|
+      assert(params.has_key?(key), "params has valid key #{key.inspect}")
+    end
+  end
 end
 

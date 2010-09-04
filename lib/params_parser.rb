@@ -5,6 +5,7 @@ class SimpleConsole::ParamsParser
     @letter_types ||= Hash.new
     @error_list ||= Array.new
     @valid_param_list ||= Array.new
+    @valid_param_key_list ||= Array.new
   end
 
   def int_params(list) 
@@ -32,7 +33,7 @@ class SimpleConsole::ParamsParser
         value = argv[argv.index(arg) + 1]
         if @letter_to_key.has_value?(argument.to_sym)
           params[argument.to_sym] = get_value_of(value, argument.to_sym)
-          add_valid(arg)
+          add_valid(arg, argument.to_sym)
         else
           add_error(arg)
         end
@@ -42,7 +43,7 @@ class SimpleConsole::ParamsParser
         if @letter_to_key.has_key?(argument.to_sym)
           argument = @letter_to_key[argument.to_sym]
           params[argument.to_sym] = get_value_of(value, argument.to_sym)
-          add_valid(arg)
+          add_valid(arg, argument.to_sym)
         else
           add_error(arg)
         end
@@ -60,6 +61,11 @@ class SimpleConsole::ParamsParser
   def valid_params
     @valid_param_list ||=Array.new
     return @valid_param_list
+  end
+
+  def valid_param_keys
+    @valid_param_key_list ||=Array.new
+    return @valid_param_key_list
   end
   
   private
@@ -80,9 +86,11 @@ class SimpleConsole::ParamsParser
     @error_list << error
   end
 
-  def add_valid(valid_param)
+  def add_valid(arg, key)
     @valid_param_list ||= Array.new
-    @valid_param_list << valid_param
+    @valid_param_key_list ||= Array.new
+    @valid_param_list << arg
+    @valid_param_key_list << key
   end
 
   def get_value_of(value, key)
