@@ -1,6 +1,5 @@
 require "rake/clean"
 require "rubygems"
-Gem::manage_gems
 require "rake/gempackagetask"
 
 CLEAN.include("doc", "coverage", "site/site", "site/doc", "pkg")
