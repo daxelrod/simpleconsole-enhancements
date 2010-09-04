@@ -1,0 +1,46 @@
+h1. What is SimpleConsole?
+
+It's a tiny framework to get console applications developed quickly.  It might
+be overkill scripts, but is pretty useful for some applications.
+
+h1. How does it work?
+
+SimpleConsole has a controller and a view, the controller sets up variables for
+the view to present.  The view is optional, but is handy in the cases that you
+have a lot of 'puts' methods and you want to separate them from your logic.
+
+Here's an example, full working program:
+
+<pre class="code">
+#!/usr/bin/env ruby -w
+require 'rubygems'
+require 'simpleconsole'
+
+class Controller < SimpleConsole::Controller
+  params :string => {:n => :name, :w => :word}
+
+  def print
+    @name = params[:name]
+    @word = params[:word]
+  end
+end
+
+class View < SimpleConsole::View
+  def print
+    puts "Your name is " + @name + "."
+    puts "You wanted me to say the word " + @word + "."
+  end
+end
+
+SimpleConsole::Application.run(ARGV, Controller, View)
+</pre>
+
+If this program were in the file 'myapp', you could use it on the command line
+like this:
+
+<pre class="code">
+% myapp print --name Hugh -w Hello
+Your name is Hugh.
+You wanted me to say the word Hello.
+</pre>
+
