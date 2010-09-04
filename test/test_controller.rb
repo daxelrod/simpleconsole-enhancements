@@ -1,6 +1,5 @@
 require "test/unit"
 require "rubygems"
-require "stubba"
 require File.dirname(__FILE__) + "/../lib/init.rb"
 
 # SampleController for tests usage.
