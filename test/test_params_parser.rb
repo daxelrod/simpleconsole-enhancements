@@ -61,5 +61,13 @@ class TestParamsParser < Test::Unit::TestCase
     @parser.argv_to_params(argv)
     assert_same_set(%w(-i --monkey), @parser.invalid_params)
   end
+
+  def test_valid_params
+    @parser.string_params(:s => :string, :t => :title)
+    argv = ["-s", "a string", "--title", "the title", "--monkey", "Macaque", "-i", "not valid"]
+
+    @parser.argv_to_params(argv)
+    assert_same_set(%w(-s --title), @parser.valid_params)
+  end
 end
 
