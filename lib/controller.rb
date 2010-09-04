@@ -129,6 +129,26 @@ class SimpleConsole::Controller
     return false
   end
 
+  # Returns an array of user-supplied options that weren't specified by the
+  # params call.
+  # == Example Usage
+  #   params :string => {:f => :first, :s => :second},
+  #          :int => {:t => :third}
+  #   before_filter :check_params
+  #   # ...
+  #   def check_params
+  #     puts "Invalid option(s): " + invalid_params.join(", ")
+  #     puts "Valid option(s): " + valid_params.join(", ")
+  #   end
+  # == On the command line
+  #   myapp --first one -t 3 --fourth oops --fifth huh?
+  #   Invalid option(s): --fourth, --fifth
+  #   Valid option(s): --first -t
+  #
+  def valid_params
+    return @@params_parser.valid_params
+  end
+
   private
   # Calls all methods from "before_filter" for the given method.
   #   controller.call_before_filter_for(:method)
