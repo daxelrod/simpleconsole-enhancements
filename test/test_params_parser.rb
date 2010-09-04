@@ -1,4 +1,5 @@
 require "test/unit"
+require "set"
 require File.dirname(__FILE__) + "/../lib/init.rb"
 
 class TestParamsParser < Test::Unit::TestCase
@@ -19,6 +20,10 @@ class TestParamsParser < Test::Unit::TestCase
       assert(expected.has_key?(key) && expected.has_value?(value))
       assert_equal(value, expected[key])
     end
+  end
+
+  def assert_same_set(expected, result)
+    assert_equal(expected.to_set, result.to_set)
   end
 
   def test_int
@@ -48,4 +53,13 @@ class TestParamsParser < Test::Unit::TestCase
 
     assert_same_hash({:string => "a string", :title => "the title"}, @parser.argv_to_params(argv))
   end
+
+  def test_invalid_params
+    @parser.string_params(:s => :string, :t => :title)
+    argv = ["-s", "a string", "--title", "the title", "--monkey", "Macaque", "-i", "not valid"]
+
+    @parser.argv_to_params(argv)
+    assert_same_set(%w(-i --monkey), @parser.invalid_params)
+  end
 end
+
