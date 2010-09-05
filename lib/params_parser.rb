@@ -26,19 +26,20 @@ class SimpleConsole::ParamsParser
     params = Hash.new
     @letter_to_key ||= Hash.new
     argv.each do |arg|
-      if arg =~ /^--(.*)$/
-        argument = $1
-        value = argv[argv.index(arg) + 1]
-        if @letter_to_key.has_value?(argument.to_sym)
-          params[argument.to_sym] = get_value_of(value, argument.to_sym)
+      if arg =~ /^-(-?)(.+)$/
+        second_dash = $1
+        argument = $2
+        value = argv[argv.index(arg) + 1] 
+
+        found = nil
+        if ((second_dash == '') && (argument.length == 1)) #If we were passed a one-letter argument
+          found = @letter_to_key.has_key?(argument.to_sym)
+          argument = @letter_to_key[argument.to_sym] if found
         else
-          add_error(arg)
+          found = @letter_to_key.has_value?(argument.to_sym)
         end
-      elsif arg =~ /^-(.)/
-        argument = $1
-        value = argv[argv.index(arg) + 1]
-        if @letter_to_key.has_key?(argument.to_sym)
-          argument = @letter_to_key[argument.to_sym]
+
+        if found
           params[argument.to_sym] = get_value_of(value, argument.to_sym)
         else
           add_error(arg)
