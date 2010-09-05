@@ -29,7 +29,17 @@ class SimpleConsole::ParamsParser
       if arg =~ /^-(-?)(.+)$/
         second_dash = $1
         argument = $2
-        value = argv[argv.index(arg) + 1] 
+
+        argument_equals_split = argument.split("=")
+        argument, value = case argument_equals_split.size
+        when 1
+          [argument, argv[argv.index(arg) + 1]]
+        when 2
+          argument_equals_split
+        else #Consider --foo=bar=baz malformed
+          add_error(arg)
+          next
+        end
 
         found = nil
         if ((second_dash == '') && (argument.length == 1)) #If we were passed a one-letter argument
