@@ -1,7 +1,12 @@
 require "test/unit"
 require "rubygems"
 require "mocha"
+require "set"
 require File.dirname(__FILE__) + "/../lib/init.rb"
+
+  def assert_same_set(expected, result)
+    assert_equal(expected.to_set, result.to_set)
+  end
 
 # SampleController for tests usage.
 # :say_hi should be followed by a :say_bye
@@ -24,6 +29,8 @@ class SampleController < SimpleConsole::Controller
   def say_hi; "hi"; end
   
   def bye; "goodbye"; end
+
+  public :invalid_params, :invalid_params?, :valid_params #So that we can call these from the tests below
 end
 
 class TestController < Test::Unit::TestCase
@@ -68,6 +75,15 @@ class TestController < Test::Unit::TestCase
     assert_equal(control.params[:description], "programmer")
     assert_equal(control.params[:open], true)
     assert_equal(control.params[:closed], nil)
+  end
+
+  def test_param_validity
+    control = SampleController.new
+    control.set_params %w(-i 1 --name Hugh -t Mr --description programmer --open --monkey Macaque -q invalid)
+
+    assert(control.send(:invalid_params?), "There are invalid parameters")
+    assert_same_set(%w(--monkey -q), control.invalid_params)
+    assert_same_set(%w(-i --name -t --description --open), control.valid_params)
   end
 
 end
