@@ -7,7 +7,7 @@ SRC = FileList['lib/*']
 
 desc "Creates documentation for the project"
 task :doc do
-  sh "rdoc README MIT-LICENSE lib/* --main README"
+  sh "rdoc MIT-LICENSE lib/*"
 end
 
 desc "Runs all unit tests"
