@@ -129,8 +129,8 @@ class SimpleConsole::Controller
     return false
   end
 
-  # Returns an array of user-supplied options that weren't specified by the
-  # params call.
+  # Returns an array of options that the user supplied and that were specified
+  # specified by the params call.
   # == Example Usage
   #   params :string => {:f => :first, :s => :second},
   #          :int => {:t => :third}
