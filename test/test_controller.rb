@@ -7,6 +7,11 @@ require File.dirname(__FILE__) + "/../lib/init.rb"
 # :say_hi should be followed by a :say_bye
 # :bye should be prepended with a :hello
 class SampleController < SimpleConsole::Controller
+  params :int => { :i => :integer },
+         :string => { :n => :name, :t => :title },
+         :text => { :d => :description },
+         :bool => { :o => :open, :c => :closed}
+
   before_filter :say_hi, :only => [:say_bye]
   after_filter :bye, :except => [:say_bye]
 
@@ -51,6 +56,18 @@ class TestController < Test::Unit::TestCase
     control = SampleController.new    
     control.expects(:say_bye).at_least_once
     assert_nothing_raised(RuntimeError) { control.execute_action }
+  end
+
+  def test_params
+    control = SampleController.new
+    control.set_params %w(-i 1 --name Hugh -t Mr --description programmer --open)
+
+    assert_equal(control.params[:integer], 1)
+    assert_equal(control.params[:name], "Hugh")
+    assert_equal(control.params[:title], "Mr")
+    assert_equal(control.params[:description], "programmer")
+    assert_equal(control.params[:open], true)
+    assert_equal(control.params[:closed], nil)
   end
 
 end
