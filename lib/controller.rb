@@ -130,7 +130,7 @@ class SimpleConsole::Controller
   end
 
   # Returns an array of options that the user supplied and that were specified
-  # specified by the params call.
+  # by the params call.
   # == Example Usage
   #   params :string => {:f => :first, :s => :second},
   #          :int => {:t => :third}
@@ -147,6 +147,23 @@ class SimpleConsole::Controller
   #
   def valid_params
     return @@params_parser.valid_params
+  end
+
+  # Like valid_params, but returns an array of keys for the params hash.
+  # 
+  # In other words, returns an array of symbols which are the full names
+  # of the options that the user passed, and that are specified in
+  # params.
+  # == On the command line
+  #   myapp --first one -t 3 --fourth oops --fifth huh?
+  # == Example Usage
+  #   params :string => {:f => :first, :s => :second},
+  #          :int => {:t => :third}
+  #   # ...
+  #   valid_param_keys #=> [:first, :third]
+  #   valid_params #=> ['--first', '-t']
+  def valid_param_keys
+    return @@params_parser.valid_param_keys
   end
 
   private

@@ -30,7 +30,7 @@ class SampleController < SimpleConsole::Controller
   
   def bye; "goodbye"; end
 
-  public :invalid_params, :invalid_params?, :valid_params #So that we can call these from the tests below
+  public :invalid_params, :invalid_params?, :valid_params, :valid_param_keys #So that we can call these from the tests below
 end
 
 class TestController < Test::Unit::TestCase
@@ -81,9 +81,16 @@ class TestController < Test::Unit::TestCase
     control = SampleController.new
     control.set_params %w(-i 1 --name Hugh -t Mr --description programmer --open --monkey Macaque -q invalid)
 
+    expected_keys = [:integer, :name, :title, :description, :open] 
+
     assert(control.send(:invalid_params?), "There are invalid parameters")
     assert_same_set(%w(--monkey -q), control.invalid_params)
     assert_same_set(%w(-i --name -t --description --open), control.valid_params)
+    assert_same_set(expected_keys, control.valid_param_keys)
+
+    control.valid_param_keys.each do |key|
+      assert(control.params.has_key?(key), "params has valid key #{key.inspect}")
+    end
   end
 
 end
