@@ -48,4 +48,12 @@ class TestParamsParser < Test::Unit::TestCase
 
     assert_same_hash({:string => "a string", :title => "the title"}, @parser.argv_to_params(argv))
   end
+
+  def test_equals_format
+    @parser.string_params(:s => :string, :t => :title, :n => :name)
+    argv = ["-s=a string", "--title=title", "--name=Dan=great"]
+
+    assert_same_hash({:string => "a string", :title => "title"}, @parser.argv_to_params(argv))
+    assert_equal(["--name=Dan=great"], @parser.invalid_params)
+  end
 end
