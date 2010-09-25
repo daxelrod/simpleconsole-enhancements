@@ -56,4 +56,12 @@ class TestParamsParser < Test::Unit::TestCase
     assert_same_hash({:string => "a string", :title => "title"}, @parser.argv_to_params(argv))
     assert_equal(["--name=Dan=great"], @parser.invalid_params)
   end
+
+  def test_single_nospace_format
+    @parser.string_params(:s => :string, :t => :title, :n => :name)
+    argv = ["-sstring", "-ttitle", "-nDan=great"]
+
+    assert_same_hash({:string => "string", :title => "title"}, @parser.argv_to_params(argv))
+    assert_equal(["-nDan=great"], @parser.invalid_params)
+  end
 end
