@@ -64,4 +64,20 @@ class TestParamsParser < Test::Unit::TestCase
     assert_same_hash({:string => "string", :title => "title"}, @parser.argv_to_params(argv))
     assert_equal(["-nDan=great"], @parser.invalid_params)
   end
+
+  def test_preserve_argv
+
+    #Always test that at least one arg is preserved,
+    #since the test script is usually invoked without args
+    ARGV << "sentinel"
+
+    orig_global_argv = ARGV
+
+    @parser.string_params(:s => :string)
+    supplied_argv = ["-s" "hello"]
+    
+    @parser.argv_to_params(supplied_argv)
+
+    assert_equal(orig_global_argv, ARGV)
+  end
 end
