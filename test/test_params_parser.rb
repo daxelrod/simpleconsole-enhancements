@@ -49,6 +49,20 @@ class TestParamsParser < Test::Unit::TestCase
     assert_same_hash({:string => "a string", :title => "the title"}, @parser.argv_to_params(argv))
   end
 
+  def test_invalid
+    @parser.string_params(:s => :string, :t => :title)
+    argv = ["--string", "string", "-i", "short_invalid", "--inv", "long_invalid"]
+    assert_same_hash({:string => "string"}, @parser.argv_to_params(argv))
+    assert_equal(["-i", "--inv"].sort, @parser.invalid_params.sort)
+  end
+
+  def test_ambiguous
+    @parser.string_params(:s => :string, :i => :strike)
+    argv = ["--string", "string", "--str", "ambiguous"]
+    assert_same_hash({:string => "string"}, @parser.argv_to_params(argv))
+    assert_equal(["--str"], @parser.invalid_params)
+  end
+
   def test_equals_format
     @parser.string_params(:s => :string, :t => :title, :n => :name)
     argv = ["-s=a string", "--title=title", "--name=Dan=great"]
